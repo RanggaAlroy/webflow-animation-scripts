@@ -5,16 +5,14 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 gsap.registerPlugin(ScrollTrigger)
 
 export const newScroll = () => {
-  const lenis = new Lenis()
-  lenis.on('scroll', ScrollTrigger.update)
-  gsap.ticker.add((time) => {
-    lenis.raf(time * 1000)
-  })
-  gsap.ticker.lagSmoothing(0)
-
   const images = document.querySelectorAll('.img-item')
   const imgReverse = Array.from(images).reverse()
   const allContainers = document.querySelectorAll('.full')
+
+  const scroller = new Lenis({
+    el: document.querySelector('.full'),
+    smooth: true,
+  })
 
   allContainers.forEach((container, index) => {
     const currentImage = imgReverse[index % imgReverse.length]
@@ -26,6 +24,11 @@ export const newScroll = () => {
         scrub: true,
         ease: 'linear',
         markers: true,
+        onUpdate: (self) => {
+          // Update ScrollTrigger progress based on Lenis scroll position
+          self.progress =
+            scroller.scroll.y / (scroller.limit - window.innerHeight)
+        },
       },
     })
 
